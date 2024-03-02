@@ -26,5 +26,15 @@
             public const string Delete = prefix + "Delete/" + SingleRoute;
             public const string Paginated = prefix + "Paginated";
         }
+        public static class UserRouting
+        {
+            public const string prefix = Rule + "User/";
+            public const string List = prefix + "List";
+            public const string GetById = prefix + "GetById";
+            public const string Create = prefix + "Create";
+            public const string Edit = prefix + "Edit";
+            public const string Delete = prefix + "Delete/" + SingleRoute;
+            public const string Paginated = prefix + "Paginated";
+        }
     }
 }
