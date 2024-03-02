@@ -26,10 +26,7 @@
     <Folder Include="Features\Departments\Commands\Models\" />
     <Folder Include="Features\Departments\Commands\Validations\" />
     <Folder Include="Features\Users\Commands\Handlers\" />
-    <Folder Include="Features\Users\Queries\Handlers\" />
-    <Folder Include="Features\Users\Queries\Models\" />
     <Folder Include="Mapping\Departments\CommandMapping\" />
-    <Folder Include="Mapping\Users\QueryMapping\" />
   </ItemGroup>
 
 </Project>
