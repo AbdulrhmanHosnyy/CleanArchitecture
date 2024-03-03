@@ -5,14 +5,14 @@ using SchoolProject.Core.Resources;
 
 namespace SchoolProject.Core.Features.Users.Commands.Validations
 {
-    public class AddUserValidator : AbstractValidator<AddUserCommand>
+    public class EditUserValidator : AbstractValidator<EditUserCommand>
     {
         #region Fields
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
         #endregion
 
         #region Constructors
-        public AddUserValidator(IStringLocalizer<SharedResources> stringLocalizer)
+        public EditUserValidator(IStringLocalizer<SharedResources> stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
             ApplyValidationRules();
@@ -23,6 +23,10 @@ namespace SchoolProject.Core.Features.Users.Commands.Validations
         #region Functions
         public void ApplyValidationRules()
         {
+            RuleFor(u => u.Id)
+                .NotEmpty().WithMessage(_stringLocalizer[SharedResourcesKeys.NotEmpty])
+                .NotNull().WithMessage(_stringLocalizer[SharedResourcesKeys.Required]);
+
             RuleFor(u => u.FullName)
                  .NotEmpty().WithMessage(_stringLocalizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_stringLocalizer[SharedResourcesKeys.Required])
@@ -36,13 +40,6 @@ namespace SchoolProject.Core.Features.Users.Commands.Validations
             RuleFor(u => u.Email)
                 .NotEmpty().WithMessage(_stringLocalizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_stringLocalizer[SharedResourcesKeys.Required]);
-
-            RuleFor(u => u.Password)
-               .NotEmpty().WithMessage(_stringLocalizer[SharedResourcesKeys.NotEmpty])
-               .NotNull().WithMessage(_stringLocalizer[SharedResourcesKeys.Required]);
-
-            RuleFor(u => u.ConfirmPassword)
-               .Equal(u => u.Password).WithMessage(_stringLocalizer[SharedResourcesKeys.PasswordNotEqualConfirmPass]);
         }
         public void ApplyCustomValidationRules()
         {

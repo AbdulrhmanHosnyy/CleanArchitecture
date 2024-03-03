@@ -27,6 +27,7 @@
     <Folder Include="Features\Departments\Commands\Validations\" />
     <Folder Include="Features\Users\Commands\Handlers\" />
     <Folder Include="Mapping\Departments\CommandMapping\" />
+    <Folder Include="Mapping\Users\QueryMapping\" />
   </ItemGroup>
 
 </Project>
