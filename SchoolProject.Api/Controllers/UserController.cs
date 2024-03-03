@@ -28,9 +28,9 @@ namespace SchoolProject.Api.Controllers
             return NewResult(response);
         }
         [HttpPut(Router.UserRouting.Edit)]
-        public async Task<IActionResult> Edit([FromBody] EditUserCommand updateUserCommand)
+        public async Task<IActionResult> Edit([FromBody] EditUserCommand editUserCommand)
         {
-            var response = await Mediator.Send(updateUserCommand);
+            var response = await Mediator.Send(editUserCommand);
             return NewResult(response);
         }
 
