@@ -35,6 +35,7 @@
             public const string Edit = prefix + "Edit";
             public const string Delete = prefix + "Delete/" + SingleRoute;
             public const string Paginated = prefix + "Paginated";
+            public const string ChangePassword = prefix + "ChangePassword";
         }
     }
 }
