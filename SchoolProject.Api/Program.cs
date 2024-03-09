@@ -23,7 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 builder.Services.AddInfrustructureDependencies()
                 .AddServiceDependencies()
                 .AddCoreDependencies()
-                .AddServiceRegistration();
+                .AddServiceRegistration(builder.Configuration);
 #endregion
 
 #region Localization
@@ -80,6 +80,7 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors(CORS);
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
