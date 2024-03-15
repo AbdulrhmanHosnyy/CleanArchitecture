@@ -49,6 +49,9 @@ namespace SchoolProject.Core.Features.Users.Commands.Handlers
             //  Create User
             var result = await _userManager.CreateAsync(identityUser, request.Password);
             if (!result.Succeeded) return BadRequest<string>(result.Errors.FirstOrDefault().Description);
+
+            //  Add User Role
+            else await _userManager.AddToRoleAsync(identityUser, "User");
             return Created("");
         }
         public async Task<Response<string>> Handle(EditUserCommand request, CancellationToken cancellationToken)
