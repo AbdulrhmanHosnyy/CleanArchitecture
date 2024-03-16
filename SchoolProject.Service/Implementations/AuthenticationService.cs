@@ -92,7 +92,7 @@ namespace SchoolProject.Service.Implementations
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        public async Task<List<Claim>> GetClaims(User user)
+        public List<Claim> GetClaims(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>

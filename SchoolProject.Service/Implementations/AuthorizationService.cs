@@ -74,6 +74,8 @@ namespace SchoolProject.Service.Implementations
         public async Task<Role> GetRoleById(int id) => await _roleManager.FindByIdAsync(id.ToString());
         public async Task<ManageUserRolesResponse> ManageUserRolesData(User user)
         {
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             var roles = await _roleManager.Roles.ToListAsync();
 
             var response = new ManageUserRolesResponse();
