@@ -60,8 +60,7 @@ namespace SchoolProject.Service.Implementations
         }
         private async Task<(JwtSecurityToken, string)> GenerateJWTToken(User user)
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            var claims = GetClaims(user, roles.ToList());
+            var claims = await GetClaims(user);
 
             var token = new JwtSecurityToken(_jwtSettings.Issuer,
                                              _jwtSettings.Audience,
@@ -93,8 +92,9 @@ namespace SchoolProject.Service.Implementations
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        public List<Claim> GetClaims(User user, List<string> roles)
+        public async Task<List<Claim>> GetClaims(User user)
         {
+            var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
@@ -104,6 +104,9 @@ namespace SchoolProject.Service.Implementations
                 new Claim(nameof(UserClaims.Id), user.Id.ToString()),
             };
             foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var userCalims = await _userManager.GetClaimsAsync(user);
+            claims.AddRange(userCalims);
 
             return claims;
         }

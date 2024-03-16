@@ -74,8 +74,6 @@ namespace SchoolProject.Service.Implementations
         public async Task<Role> GetRoleById(int id) => await _roleManager.FindByIdAsync(id.ToString());
         public async Task<ManageUserRolesResponse> ManageUserRolesData(User user)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-
             var roles = await _roleManager.Roles.ToListAsync();
 
             var response = new ManageUserRolesResponse();
@@ -87,7 +85,7 @@ namespace SchoolProject.Service.Implementations
                 var userRole = new UserRoles();
                 userRole.Id = role.Id;
                 userRole.Name = role.Name;
-                if (userRoles.Contains(role.Name))
+                if (await _userManager.IsInRoleAsync(user, role.Name))
                     userRole.HasRole = true;
                 rolesList.Add(userRole);
             }
