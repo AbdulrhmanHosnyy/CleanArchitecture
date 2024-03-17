@@ -40,6 +40,8 @@ namespace SchoolProject.Core.Features.Authentication.Commands.Handlers
             if (user is null) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.UserNameIsNotExist]);
             //  Execute signIn
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+            //  Confirm email
+            if (!user.EmailConfirmed) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);
             if (!signInResult.Succeeded) return BadRequest<JwtAuthResult>(signInResult.ToString());
             //  Generate token
             var result = await _authenticationService.GetJWTToken(user);

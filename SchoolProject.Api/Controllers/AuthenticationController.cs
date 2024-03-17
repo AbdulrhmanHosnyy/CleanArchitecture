@@ -27,5 +27,11 @@ namespace SchoolProject.Api.Controllers
             var response = await Mediator.Send(authorizeUserQuery);
             return NewResult(response);
         }
+        [HttpGet(Router.AuthenticationRouting.ConfirmEmail)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailQuery confirmEmailQuery)
+        {
+            var response = await Mediator.Send(confirmEmailQuery);
+            return NewResult(response);
+        }
     }
 }

@@ -92,7 +92,7 @@ namespace SchoolProject.Service.Implementations
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        public List<Claim> GetClaims(User user)
+        public async Task<List<Claim>> GetClaims(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
@@ -190,6 +190,15 @@ namespace SchoolProject.Service.Implementations
                 return ("RefreshTokenIsExpired", null);
             }
             return (userId, userRefreshToken.ExpiryDate);
+        }
+
+        public async Task<string> ConfirmEmail(int? userId, string? code)
+        {
+            if (userId is null || code is null) return "ErrorWhenConfirmEmail";
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
+            if (!confirmEmail.Succeeded) return "ErrorWhenConfirmEmail";
+            return "Success";
         }
 
         #endregion
