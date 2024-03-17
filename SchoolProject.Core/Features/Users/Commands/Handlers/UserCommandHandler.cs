@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -7,6 +8,7 @@ using SchoolProject.Core.Bases;
 using SchoolProject.Core.Features.Users.Commands.Models;
 using SchoolProject.Core.Resources;
 using SchoolProject.Data.Entities.Identity;
+using SchoolProject.Service.Abstracts;
 
 namespace SchoolProject.Core.Features.Users.Commands.Handlers
 {
@@ -20,39 +22,48 @@ namespace SchoolProject.Core.Features.Users.Commands.Handlers
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResources> _stringLocalizer;
         private readonly UserManager<User> _userManager;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IEmailsService _emailsService;
+        private readonly IUserService _userService;
         #endregion
 
         #region Constructors
         public UserCommandHandler(IStringLocalizer<SharedResources> stringLocalizer, IMapper mapper,
-            UserManager<User> userManager) : base(stringLocalizer)
+            UserManager<User> userManager, IHttpContextAccessor contextAccessor, IEmailsService emailsService,
+            IUserService userService) : base(stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
             _mapper = mapper;
             _userManager = userManager;
+            _contextAccessor = contextAccessor;
+            _emailsService = emailsService;
+            _userService = userService;
         }
         #endregion
 
         #region Functions
         public async Task<Response<string>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
-            //  Cheack email existance
-            var userByEmail = await _userManager.FindByEmailAsync(request.Email);
-            if (userByEmail is not null) return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.EmailIsExist]);
-
-            //  Cheack username existance
-            var userByUserName = await _userManager.FindByNameAsync(request.UserName);
-            if (userByUserName is not null) return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.UserNameIsExist]);
-
             //  Mapping user
             var identityUser = _mapper.Map<User>(request);
 
             //  Create User
-            var result = await _userManager.CreateAsync(identityUser, request.Password);
-            if (!result.Succeeded) return BadRequest<string>(result.Errors.FirstOrDefault().Description);
-
-            //  Add User Role
-            else await _userManager.AddToRoleAsync(identityUser, "User");
-            return Created("");
+            var result = await _userService.AddUserAsync(identityUser, request.Password);
+            switch (result)
+            {
+                case "EmailIsExist":
+                    return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.EmailIsExist]);
+                case "UserNameIsExist":
+                    return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.UserNameIsExist]);
+                case "ErrorInCreateUser":
+                    return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.FaildToAddUser]);
+                case "Failed":
+                    return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.TryToRegisterAgain]);
+                case "Success":
+                    return Success<string>("");
+                default:
+                    return BadRequest<string>(result);
+            }
         }
         public async Task<Response<string>> Handle(EditUserCommand request, CancellationToken cancellationToken)
         {

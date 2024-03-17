@@ -43,6 +43,7 @@
             public const string SignIn = prefix + "SignIn";
             public const string RefreshToken = prefix + "RefreshToken";
             public const string ValidateToken = prefix + "ValidateToken";
+            public const string ConfirmEmail = "/Api/Authentication/ConfirmEmail";
         }
         public static class AuthorizationRouting
         {
@@ -58,6 +59,13 @@
             public const string UpdateUserRoles = roles + "UpdateUserRoles";
             public const string ManageUserClaims = claims + "ManageUserClaims/" + SingleRoute;
             public const string UpdateUserClaims = claims + "UpdateUserClaims/";
+        }
+
+        public static class EmailsRouting
+        {
+            public const string prefix = Rule + "Email/";
+            public const string SendEmail = prefix + "SendEmail";
+
         }
 
     }
