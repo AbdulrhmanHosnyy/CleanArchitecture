@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EntityFrameworkCore.EncryptColumn.Interfaces;
+using EntityFrameworkCore.EncryptColumn.Util;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SchoolProject.Data.Entities.Identity;
 using SchoolProject.Data.Helpers;
 using SchoolProject.Data.Results;
 using SchoolProject.Infrustructure.Abstracts;
+using SchoolProject.Infrustructure.Data;
 using SchoolProject.Service.Abstracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,14 +22,21 @@ namespace SchoolProject.Service.Implementations
         private readonly JwtSettings _jwtSettings;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailsService _emailsService;
+        private readonly AppDbContext _appDbContext;
+        private readonly IEncryptionProvider _encryptionProvider;
         #endregion
 
         #region Constructors
-        public AuthenticationService(JwtSettings jwtSettings, IRefreshTokenRepository refreshTokenRepository, UserManager<User> userManager)
+        public AuthenticationService(JwtSettings jwtSettings, IRefreshTokenRepository refreshTokenRepository,
+            UserManager<User> userManager, IEmailsService emailsService, AppDbContext appDbContext)
         {
             _jwtSettings = jwtSettings;
             _refreshTokenRepository = refreshTokenRepository;
             _userManager = userManager;
+            _emailsService = emailsService;
+            _appDbContext = appDbContext;
+            _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
         }
         #endregion
 
@@ -199,6 +209,64 @@ namespace SchoolProject.Service.Implementations
             var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
             if (!confirmEmail.Succeeded) return "ErrorWhenConfirmEmail";
             return "Success";
+        }
+
+        public async Task<string> SendResetPasswordCode(string email)
+        {
+            var transition = await _appDbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null) return "NotFound";
+
+                Random generator = new Random();
+                string randomNumber = generator.Next(0, 1000000).ToString("D6");
+
+                user.Code = randomNumber;
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded) return "ErrorInUpdateUser";
+
+                var message = "Code to reset password : " + user.Code;
+                await _emailsService.SendEmail(user.Email, message, "Reset Password");
+                await transition.CommitAsync();
+                return "Success";
+            }
+            catch
+            {
+                await transition.RollbackAsync();
+                return "Failed";
+            }
+        }
+
+        public async Task<string> ConfirmResetPasswordCode(string code, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return "NotFound";
+
+            var userCode = user.Code;
+
+            if (userCode == code) return "Success";
+            return "Failed";
+        }
+
+        public async Task<string> ResetPassword(string email, string newPassword)
+        {
+            var transition = await _appDbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null) return "NotFound";
+
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, newPassword);
+                await transition.CommitAsync();
+                return "Success";
+            }
+            catch
+            {
+                await transition.RollbackAsync();
+                return "Failed";
+            }
         }
 
         #endregion

@@ -16,6 +16,7 @@ namespace SchoolProject.Service.Implementations
         private readonly AppDbContext _appDbContext;
         private readonly IUrlHelper _urlHelper;
         #endregion
+
         #region Constructors
         public UserService(UserManager<User> userManager, IHttpContextAccessor contextAccessor,
             IEmailsService emailsService, AppDbContext appDbContext, IUrlHelper urlHelper)
@@ -27,6 +28,7 @@ namespace SchoolProject.Service.Implementations
             _urlHelper = urlHelper;
         }
         #endregion
+
         #region Functions
         public async Task<string> AddUserAsync(User user, string password)
         {
@@ -53,9 +55,10 @@ namespace SchoolProject.Service.Implementations
                 var requestAccessor = _contextAccessor.HttpContext.Request;
                 var returnUrl = requestAccessor.Scheme + "://" + requestAccessor.Host +
                     _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
+                var message = $"To confirm email click link <a href='{returnUrl}'></a>";
                 //$"/api/V1/Authentication/ConfirmEmail?userId{user.Id}&code={code}";
 
-                await _emailsService.SendEmail(user.Email, returnUrl);
+                await _emailsService.SendEmail(user.Email, message, "Confirm Email");
                 await transition.CommitAsync();
                 return "Success";
             }

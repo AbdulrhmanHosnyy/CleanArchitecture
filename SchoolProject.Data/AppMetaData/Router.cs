@@ -44,6 +44,9 @@
             public const string RefreshToken = prefix + "RefreshToken";
             public const string ValidateToken = prefix + "ValidateToken";
             public const string ConfirmEmail = "/Api/Authentication/ConfirmEmail";
+            public const string SendResetPassword = prefix + "SendResetEmail";
+            public const string ConfirmResetPassword = prefix + "ConfirmResetPassword";
+            public const string ResetPassword = prefix + "ResetPassword";
         }
         public static class AuthorizationRouting
         {
