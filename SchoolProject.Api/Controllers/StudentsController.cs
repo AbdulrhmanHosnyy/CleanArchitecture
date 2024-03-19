@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolProject.Api.Bases;
 using SchoolProject.Core.Features.Students.Commands.Models;
 using SchoolProject.Core.Features.Students.Queries.Models;
+using SchoolProject.Core.Filters;
 using SchoolProject.Data.AppMetaData;
 
 namespace SchoolProject.Api.Controllers
@@ -19,6 +20,8 @@ namespace SchoolProject.Api.Controllers
 
         #region Actions
         [HttpGet(Router.StudentRouting.List)]
+        [Authorize(Roles = "User")]
+        [ServiceFilter(typeof(AuthFilter))]
         public async Task<IActionResult> GetStudentsList()
         {
             var response = await Mediator.Send(new GetStudentsListQuery());
