@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolProject.Data.Entities;
+using SchoolProject.Data.Entities.Procedures;
+using SchoolProject.Data.Entities.Views;
 using SchoolProject.Infrustructure.Abstracts;
+using SchoolProject.Infrustructure.Abstracts.Procedures;
+using SchoolProject.Infrustructure.Abstracts.Views;
 using SchoolProject.Service.Abstracts;
 
 namespace SchoolProject.Service.Implementations
@@ -9,12 +13,17 @@ namespace SchoolProject.Service.Implementations
     {
         #region Fields
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IViewRepository<ViewDepartment> _viewRepository;
+        private readonly IDepartmentStudentCountProcedureRepository _departmentStudentCountProcedureRepository;
         #endregion
 
         #region Constructors
-        public DepartmentService(IDepartmentRepository departmentRepository)
+        public DepartmentService(IDepartmentRepository departmentRepository, IViewRepository<ViewDepartment> viewRepository,
+            IDepartmentStudentCountProcedureRepository departmentStudentCountProcedureRepository)
         {
             _departmentRepository = departmentRepository;
+            _viewRepository = viewRepository;
+            _departmentStudentCountProcedureRepository = departmentStudentCountProcedureRepository;
         }
         #endregion
 
@@ -30,10 +39,22 @@ namespace SchoolProject.Service.Implementations
             return department!;
         }
 
+        public async Task<List<ViewDepartment>> GetViewDepartmentData()
+        {
+            var viewDepartment = await _viewRepository.GetTableNoTracking().ToListAsync();
+            return viewDepartment;
+        }
+
         public async Task<bool> IsDepartmentExist(int id)
         {
             return await _departmentRepository.GetTableNoTracking().AnyAsync(d => d.DID.Equals(id));
         }
+
+        public async Task<IReadOnlyList<DepartmentStudentCountProcedure>>
+            GetDepartmentStudentCountProcedure(DepartmentStudentCountProcedureParameters parameters) =>
+                await _departmentStudentCountProcedureRepository.GetDepartmentStudentCountProcedure(parameters);
+
+
         #endregion
 
     }

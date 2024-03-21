@@ -25,6 +25,8 @@
             public const string Edit = prefix + "Edit";
             public const string Delete = prefix + "Delete/" + SingleRoute;
             public const string Paginated = prefix + "Paginated";
+            public const string GetDepartmentStudentsCount = prefix + "GetDepartmentStudentsCount";
+            public const string GetDepartmentStudentsCountById = prefix + "GetDepartmentStudentsCountById/";
         }
         public static class UserRouting
         {
@@ -68,6 +70,12 @@
         {
             public const string prefix = Rule + "Email/";
             public const string SendEmail = prefix + "SendEmail";
+
+        }
+        public static class InstructortRouting
+        {
+            public const string prefix = Rule + "Instructort/";
+            public const string GetInstructorSalarySummation = prefix + "GetInstructorSalarySummation";
 
         }
 

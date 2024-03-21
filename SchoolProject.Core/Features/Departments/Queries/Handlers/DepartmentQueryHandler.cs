@@ -7,13 +7,17 @@ using SchoolProject.Core.Features.Departments.Queries.Responses;
 using SchoolProject.Core.Resources;
 using SchoolProject.Core.Wrappers;
 using SchoolProject.Data.Entities;
+using SchoolProject.Data.Entities.Procedures;
 using SchoolProject.Service.Abstracts;
 using System.Linq.Expressions;
 
 namespace SchoolProject.Core.Features.Departments.Queries.Handlers
 {
     public class DepartmentQueryHandler : ResponseHandler,
-        IRequestHandler<GetDepartmentByIdQuery, Response<GetDepartmentByIdResponse>>
+        IRequestHandler<GetDepartmentByIdQuery, Response<GetDepartmentByIdResponse>>,
+        IRequestHandler<GetDepartmentStudentCountQuery, Response<List<GetDepartmentStudentCountResponse>>>,
+        IRequestHandler<GetDepartmentStudentCountByIdQuery, Response<GetDepartmentStudentCountByIdResponse>>
+
     {
         #region Fields
         private readonly IDepartmentService _departmentService;
@@ -53,6 +57,22 @@ namespace SchoolProject.Core.Features.Departments.Queries.Handlers
                 .ToPaginatedListAsync(request.StudentPageNumber, request.StudentPageSize);
             response.StudentsL = paginatedList;
             return Success(response);
+        }
+
+        public async Task<Response<List<GetDepartmentStudentCountResponse>>> Handle(GetDepartmentStudentCountQuery request, CancellationToken cancellationToken)
+        {
+            var viewDepartmentResult = await _departmentService.GetViewDepartmentData();
+            var result = _mapper.Map<List<GetDepartmentStudentCountResponse>>(viewDepartmentResult);
+            return Success(result);
+        }
+
+        public async Task<Response<GetDepartmentStudentCountByIdResponse>> Handle(GetDepartmentStudentCountByIdQuery request, CancellationToken cancellationToken)
+        {
+            var parameters = _mapper.Map<DepartmentStudentCountProcedureParameters>(request);
+            var procResult = await _departmentService.GetDepartmentStudentCountProcedure(parameters);
+            var result = _mapper.Map<GetDepartmentStudentCountByIdResponse>(procResult.FirstOrDefault());
+            return Success(result);
+
         }
         #endregion
 
