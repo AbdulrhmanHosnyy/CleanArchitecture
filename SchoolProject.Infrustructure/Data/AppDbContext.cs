@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolProject.Data.Entities;
 using SchoolProject.Data.Entities.Identity;
+using SchoolProject.Data.Entities.Views;
 using SchoolProject.Infrustructure.Data.Config;
 
 namespace SchoolProject.Infrustructure.Data
@@ -19,6 +20,7 @@ namespace SchoolProject.Infrustructure.Data
             _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
         }
 
+        #region Tables
         public DbSet<User> Users { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Department> Departments { get; set; }
@@ -26,6 +28,11 @@ namespace SchoolProject.Infrustructure.Data
         public DbSet<StudentSubject> StudentSubjects { get; set; }
         public DbSet<DepartmentSubject> DepartmentSubjects { get; set; }
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
+        #endregion
+
+        #region Views
+        public DbSet<ViewDepartment> ViewDepartment { get; set; }
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -6,6 +6,6 @@ namespace SchoolProject.Service.AuthService.Interfaces
     {
         public Task<User> GetUserAsync();
         public int GetUserId();
-        public Task<List<string>> GetRolesAsync();
+        public Task<List<string>> GetCurrentUserRolesAsync();
     }
 }

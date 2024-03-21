@@ -10,11 +10,11 @@ namespace SchoolProject.Service.AuthService.Implementations
     {
         #region Fields
         private readonly UserManager<User> _userManager;
-        private readonly HttpContextAccessor _contextAccessor;
+        private readonly IHttpContextAccessor _contextAccessor;
         #endregion
 
         #region Constructors
-        public CurrentUserService(UserManager<User> userManager, HttpContextAccessor contextAccessor)
+        public CurrentUserService(UserManager<User> userManager, IHttpContextAccessor contextAccessor)
         {
             _userManager = userManager;
             _contextAccessor = contextAccessor;
@@ -25,20 +25,24 @@ namespace SchoolProject.Service.AuthService.Implementations
         #region Functions
         public int GetUserId()
         {
-            var usedId = _contextAccessor.HttpContext.User.Claims
-                .SingleOrDefault(claim => claim.Type == nameof(UserClaims.Id)).Value;
-            if (usedId is null) throw new UnauthorizedAccessException();
-            return int.Parse(usedId);
+            var userId = _contextAccessor.HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == nameof(UserClaims.Id)).Value;
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            return int.Parse(userId);
         }
+
         public async Task<User> GetUserAsync()
         {
             var userId = GetUserId();
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user is null) throw new UnauthorizedAccessException();
+            if (user == null)
+            { throw new UnauthorizedAccessException(); }
             return user;
         }
 
-        public async Task<List<string>> GetRolesAsync()
+        public async Task<List<string>> GetCurrentUserRolesAsync()
         {
             var user = await GetUserAsync();
             var roles = await _userManager.GetRolesAsync(user);

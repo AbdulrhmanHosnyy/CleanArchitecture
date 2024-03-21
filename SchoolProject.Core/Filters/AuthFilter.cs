@@ -21,20 +21,21 @@ namespace SchoolProject.Core.Filters
         #region Functions
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (context.HttpContext.User.Identity.IsAuthenticated)
+            if (context.HttpContext.User.Identity.IsAuthenticated == true)
             {
-                var roles = await _currentUserService.GetRolesAsync();
+                var roles = await _currentUserService.GetCurrentUserRolesAsync();
                 if (roles.All(x => x != "User"))
                 {
                     context.Result = new ObjectResult("Forbidden")
                     {
-                        StatusCode = StatusCodes.Status400BadRequest,
+                        StatusCode = StatusCodes.Status403Forbidden
                     };
                 }
                 else
                 {
                     await next();
                 }
+
             }
         }
         #endregion

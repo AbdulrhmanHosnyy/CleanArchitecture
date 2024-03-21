@@ -20,6 +20,16 @@ namespace SchoolProject.Api.Controllers
         {
             return NewResult(await Mediator.Send(getDepartmentByIdQuery));
         }
+        [HttpGet(Router.DepartmentRouting.GetDepartmentStudentsCount)]
+        public async Task<IActionResult> GetDepartmentStudentsCount()
+        {
+            return NewResult(await Mediator.Send(new GetDepartmentStudentCountQuery()));
+        }
+        [HttpGet(Router.DepartmentRouting.GetDepartmentStudentsCountById)]
+        public async Task<IActionResult> GetDepartmentStudentsCountById([FromRoute] int DID)
+        {
+            return NewResult(await Mediator.Send(new GetDepartmentStudentCountByIdQuery(DID)));
+        }
 
         #endregion
     }
