@@ -9,6 +9,7 @@ using SchoolProject.Core.Wrappers;
 using SchoolProject.Data.Entities;
 using SchoolProject.Data.Entities.Procedures;
 using SchoolProject.Service.Abstracts;
+using Serilog;
 using System.Linq.Expressions;
 
 namespace SchoolProject.Core.Features.Departments.Queries.Handlers
@@ -56,6 +57,8 @@ namespace SchoolProject.Core.Features.Departments.Queries.Handlers
             var paginatedList = await studentList.Select(expression)
                 .ToPaginatedListAsync(request.StudentPageNumber, request.StudentPageSize);
             response.StudentsL = paginatedList;
+
+            Log.Information($"Get Department by Id {request.Id}");
             return Success(response);
         }
 

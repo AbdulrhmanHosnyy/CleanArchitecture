@@ -1,6 +1,9 @@
-﻿namespace SchoolProject.Infrustructure.Abstracts
+﻿using SchoolProject.Data.Entities;
+using SchoolProject.Infrustructure.InfrustructureBases;
+
+namespace SchoolProject.Infrustructure.Abstracts
 {
-    public interface IInstructorRepository
+    public interface IInstructorRepository : IGenericRepository<Instructor>
     {
     }
 }
